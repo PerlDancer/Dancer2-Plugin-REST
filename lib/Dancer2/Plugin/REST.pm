@@ -6,7 +6,7 @@ use warnings;
 
 use Carp 'croak';
 
-use Dancer2 ':syntax';
+use Dancer2;
 use Dancer2::Plugin;
 
 use Moo::Role;
@@ -20,7 +20,7 @@ my $content_types = {
 };
 
 register prepare_serializer_for_format => sub {
-    my $app = shift;
+    my $dsl = shift;
 
     my $conf        = plugin_setting;
     my $serializers = (
@@ -33,25 +33,27 @@ register prepare_serializer_for_format => sub {
         }
     );
 
-    hook 'before' => sub {
-        my $format = params->{'format'};
-        $format  ||= captures->{'format'} if captures;
-        return unless defined $format;
+    $dsl->hook(
+        'before' => sub {
+            my $format = $dsl->params->{'format'};
+            $format  ||= $dsl->captures->{'format'} if $dsl->captures;
+            return unless defined $format;
 
-        my $serializer = $serializers->{$format};
+            my $serializer = $serializers->{$format};
 
-        unless( $serializer ) {
-            return send_error "unsupported format requested: " . $format, 404;
+            unless( $serializer ) {
+                return $dsl->send_error("unsupported format requested: " . $format, 404);
+            }
+
+            $dsl->set(serializer => $serializer);
+            my $ct = $content_types->{$format} || $dsl->setting('content_type');
+            $dsl->content_type($ct);
         }
-
-        set serializer => $serializer;
-        my $ct = $content_types->{$format} || setting('content_type');
-        content_type $ct;
-    };
+    );
 };
 
 register resource => sub {
-    my $self = shift;
+    my $dsl = shift;
 
     my ($resource, %triggers) = @_;
 
@@ -67,7 +69,7 @@ register resource => sub {
              and grep { $triggers{$_} } keys %actions;
 
     while( my( $action, $code ) = each %triggers ) {
-            $self->app->add_route( 
+            $dsl->app->add_route( 
                 method => $actions{$action},
                 regexp => $_,
                 code   => $code,
@@ -77,11 +79,11 @@ register resource => sub {
 };
 
 register send_entity => sub {
-    my ($entity, $http_code) = @_;
+    my ($dsl, $entity, $http_code) = @_;
 
     $http_code ||= 200;
 
-    status($http_code);
+    $dsl->status($http_code);
     $entity;
 };
 
@@ -158,9 +160,9 @@ for my $code (keys %http_codes) {
     $helper_name = "status_${helper_name}";
 
     register $helper_name => sub {
-        shift;
+        my $dsl = shift;
 
-        send_entity(
+        $dsl->send_entity(
             ( $code >= 400 ? {error => $_[0]} : $_[0] ),
             $code
         );
