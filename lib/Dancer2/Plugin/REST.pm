@@ -37,7 +37,18 @@ register prepare_serializer_for_format => sub {
         'before' => sub {
             my $format = $dsl->params->{'format'};
             $format  ||= $dsl->captures->{'format'} if $dsl->captures;
-            return unless defined $format;
+            
+            unless (defined $format) {
+                if ($dsl->request->request_uri eq '/') {
+                    # TODO: is is OK to do this to a Moo object ?
+                    #   Don't know, but this is the only way to get rid of the serializer that survives across
+                    #   requests without finding out how to fix Dancer2
+                    # $dsl->request->{serializer} = undef;
+                    # $dsl->set(serializer => undef);
+                    delete $dsl->response->{serializer};
+                }
+                return;
+            }
 
             my $serializer = $serializers->{$format};
             
