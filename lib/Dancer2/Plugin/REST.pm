@@ -14,6 +14,8 @@ use Moo::Role;
 
 with 'Dancer2::Plugin';
 
+our $VERSION='0.25';
+
 # [todo] - add XML support
 my $content_types = {
     json => 'application/json',
@@ -37,7 +39,12 @@ register prepare_serializer_for_format => sub {
         'before' => sub {
             my $format = $dsl->params->{'format'};
             $format  ||= $dsl->captures->{'format'} if $dsl->captures;
-            return unless defined $format;
+
+            unless  ( defined $format ) { 
+                $dsl->set( serializer => undef );
+                delete $dsl->app->response->{serializer};
+                return;
+            }
 
             my $serializer = $serializers->{$format};
             
