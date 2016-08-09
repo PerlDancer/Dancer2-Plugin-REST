@@ -44,14 +44,14 @@ register prepare_serializer_for_format => sub {
                 return $dsl->send_error("unsupported format requested: " . $format, 404);
             }
 
-            $dsl->set(serializer => $serializer);
+            my $ct = $content_types->{$format} || $dsl->setting('content_type');
+            my $built = $dsl->app->_build_serializer_engine($serializer);
+
             $dsl->app->set_response( Dancer2::Core::Response->new(
                 %{ $dsl->app->response },
-                serializer => $dsl->set('serializer'),
+                serializer => $built,
+                content_type => $ct,
             ) );
-
-            my $ct = $content_types->{$format} || $dsl->setting('content_type');
-            $dsl->content_type($ct);
         }
     );
 };
