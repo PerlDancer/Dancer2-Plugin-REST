@@ -21,6 +21,7 @@ use JSON;
 
     get '/teapot1' => sub { status_i_m_a_teapot };
     get '/teapot2' => sub { status_418          };
+    get '/boom'    => sub { status_error +{ omg => 'urgh!' } };
 
     my $users   = {};
     my $last_id = 0;
@@ -140,5 +141,11 @@ test_psgi $app, sub {
             $r = $cb->( GET $_ );
             is( $r->code, 418, $_ );
         }
+    };
+
+    subtest '500 responses still serialize the response' => sub {
+        my $r = $cb->( GET '/boom' );
+        is $r->code, 500, 'status code';
+        is_deeply $r->content, '{"omg":"urgh!"}', 'serialized content';
     };
 }
