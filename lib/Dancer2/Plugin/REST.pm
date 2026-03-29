@@ -1,6 +1,7 @@
 package Dancer2::Plugin::REST;
+our $AUTHORITY = 'cpan:SUKRIA';
 # ABSTRACT: A plugin for writing RESTful apps with Dancer2
-
+$Dancer2::Plugin::REST::VERSION = '1.03';
 use 5.12.0;  # for the sub attributes
 
 use strict;
@@ -140,6 +141,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
+=head1 NAME
+
+Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
+
+=head1 VERSION
+
+version 1.03
 
 =head1 SYNOPSIS
 
@@ -321,7 +331,6 @@ be converted to C<{ error => $error }>.
     status_not_found("file $name not found");
     # ditto
 
-
 =head1 LICENCE
 
 This module is released under the same terms as Perl itself.
@@ -334,5 +343,16 @@ Cuny.
 =head1 SEE ALSO
 
 L<Dancer2> L<http://en.wikipedia.org/wiki/Representational_State_Transfer>
+
+=head1 AUTHOR
+
+Dancer Core Developers
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2026, 2014, 2013 by Alexis Sukrieh.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
