@@ -79,12 +79,11 @@ sub testcase {
         $test->{content_type},
         "headers have content_type set to ".$test->{content_type});
 
-    if( $test->{content_type} =~ /json/ ) {
-        todo 'in some cases the number 42 is serialized as a string' => sub {
-            is( $response->content, $test->{response}, "\$data has been encoded" );
-        };
-    }
-    else {
-        is( $response->content, $test->{response}, "\$data has been encoded" );
-    }
+    my $todo;
+    
+    # see https://github.com/PerlDancer/Dancer2-Plugin-REST/issues/19
+    $todo = todo 'in some cases the number 42 is serialized as a string' 
+        if $test->{content_type} =~ /json/;
+
+    is $response->content, $test->{response}, '$data has been encoded';
 }
