@@ -21,7 +21,6 @@ my %content_types = (
     ''   => 'text/html',
 );
 
-# TODO check if we use the handles
 has '+app' => (
     handles => [qw/
         add_hook
