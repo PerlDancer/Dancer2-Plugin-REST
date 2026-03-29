@@ -24,6 +24,7 @@ on 'test' => sub {
   requires "JSON" => "0";
   requires "Module::Runtime" => "0";
   requires "Plack::Test" => "0";
+  requires "Test2::Bundle::More" => "0";
   requires "Test::More" => "0";
   requires "Test::Requires" => "0";
 };
