@@ -4,6 +4,8 @@ Revision history for Dancer2-Plugin-REST
   [ API CHANGES ]
 
   [ BUG FIXES ]
+  - Seems like JSON::PP sometimes serialize numbers as strings. Tweaked the 
+    tests not to hard-fail when that happens. (GH#19, eseyman)
 
   [ DOCUMENTATION ]
 
